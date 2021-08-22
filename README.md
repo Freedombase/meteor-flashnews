@@ -1,5 +1,5 @@
-# template-package
-Template package with CI and everything else to get started quickly with creating a new FOSS Meteor package.
+# freedombase:flashnews
+Timed flash messages for your Meteor app
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ![GitHub](https://img.shields.io/github/license/Freedombase/meteor-flashnews)
@@ -15,10 +15,11 @@ Template package with CI and everything else to get started quickly with creatin
 meteor add freedombase:flashnews
 ```
 
+## API
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks go to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
