@@ -1,27 +1,57 @@
 import { Meteor } from 'meteor/meteor'
 import { check } from 'meteor/check'
-import { FlashNewsCollection } from '../common'
+import {
+  APP_NEWS,
+  FlashNewsCollection,
+  afterFlashNewsInsert,
+  beforeFlashNewsInsert,
+  setSanitizationFunction,
+  FlashNewsSchema,
+  currentFlashNewsSelector
+} from '../common'
 
-const currentFlashNewsSelector = {
-  $or: [{ startsAt: null }, { startsAt: { $gte: new Date() } }],
-  endsAt: { $lte: new Date() }
+export {
+  afterFlashNewsInsert,
+  beforeFlashNewsInsert,
+  setSanitizationFunction,
+  FlashNewsSchema,
+  currentFlashNewsSelector,
+  APP_NEWS,
+  FlashNewsCollection
 }
 
-Meteor.publish({
-  /**
-   * Gets current flash news for the site
-   */
-  'freedombase:flashnews-getMain': () => {
-    return FlashNewsCollection.find({ ...currentFlashNewsSelector, objectType: null })
-  },
-  /**
-   * Gets current flash news for the given object
-   * @param objectType {String}
-   * @param objectId {String}
-   */
-  'freedombase:flashnews-getFor': (objectType: String, objectId: String) => {
+/**
+ * Gets current flash news for the site
+ * @param limit {Number}
+ * @return {Mongo.Cursor}
+ */
+Meteor.publish('freedombase:flashnews-getMain', (limit = 3) => {
+  check(limit, Number)
+  return FlashNewsCollection.find(
+    {
+      ...currentFlashNewsSelector,
+      objectType: APP_NEWS
+    },
+    { limit }
+  )
+})
+/**
+ * Gets current flash news for the given object
+ * @param objectType {String}
+ * @param objectId {String}
+ * @param limit {Number}
+ * @returns {Mongo.Cursor}
+ */
+Meteor.publish(
+  'freedombase:flashnews-getFor',
+  (objectType: String, objectId: String, limit = 5) => {
     check(objectType, String)
     check(objectId, String)
-    return FlashNewsCollection.find({ ...currentFlashNewsSelector, objectType, objectId })
+    check(limit, Number)
+    return FlashNewsCollection.find({
+      ...currentFlashNewsSelector,
+      objectType,
+      objectId
+    })
   }
-})
+)

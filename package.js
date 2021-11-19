@@ -1,7 +1,7 @@
 /* global Package */
 Package.describe({
   name: 'freedombase:flashnews',
-  version: '0.0.1',
+  version: '0.1.0',
   // Brief, one-line summary of the package.
   summary: 'Timed flash messages for your Meteor app ',
   // URL to the Git repository containing the source code for this package.
@@ -12,16 +12,17 @@ Package.describe({
 })
 
 Package.onUse(function (api) {
-  api.versionsFrom('2.0')
-  api.use(['ecmascript', 'typescript', 'mongo'], 'server')
-  api.use(['aldeed:collection2@3.4.1', 'aldeed:schema-index@3.0.0'], 'server')
+  api.versionsFrom('2.3')
+  api.use(['ecmascript', 'typescript', 'mongo', 'callback-hook'])
+  api.use(['aldeed:collection2@3.5.0', 'aldeed:schema-index@3.0.0'])
+  api.mainModule('common.ts', 'client')
   api.mainModule('./server/index.ts', 'server')
 })
 
 Package.onTest(function (api) {
-  api.use('ecmascript')
+  api.use(['ecmascript', 'typescript'])
   api.use('tinytest')
-  api.use('template-package')
+  api.use('freedombase:flashnews')
   api.mainModule('./tests/package-tests-client.ts', 'client')
   api.mainModule('./tests/package-tests-server.ts', 'server')
 })

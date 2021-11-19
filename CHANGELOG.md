@@ -6,5 +6,5 @@
 ### Fixes
 ### Depracated
 
-## v1.0.0 - Unreleased
-* Initial release
+## v0.1.0 - 2021-11-19
+* Initial testing release
