@@ -3,6 +3,7 @@ import { Mongo } from 'meteor/mongo'
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import { Hook } from 'meteor/callback-hook'
+import { BaseModel } from 'meteor/socialize:base-model'
 
 export const APP_NEWS = 'meteorAppNews'
 
@@ -41,9 +42,36 @@ export const setSanitizationFunction = (func: (input: string) => string) => {
 
 export const FlashNewsCollection = new Mongo.Collection('freedombase:flashnews')
 
+export type FlashNewsType = {
+  _id: String
+  defaultLanguage: String
+  createdBy: String
+  createdAt: Date
+  startsAt?: Date
+  endsAt?: Date
+  objectType?: String
+  objectId?: String
+  content: Object
+  getContent: (language: String) => String | Object
+  availableLanguages: () => String[]
+}
+
 export const FlashNewsSchema = new SimpleSchema({
   content: {
-    type: SimpleSchema.oneOf(String, Object)
+    type: Object,
+    blackbox: true
+    /*
+     * The object looks like:
+     * {
+     *   en: { String | Object }
+     *   cs: { String | Object }
+     *   ja: { String | Object }
+     * }
+     **/
+  },
+  defaultLanguage: {
+    type: String,
+    defaultValue: 'en'
   },
   createdBy: {
     type: String,
@@ -98,9 +126,23 @@ export const FlashNewsSchema = new SimpleSchema({
     index: true
   }
 })
-
+// Attach the schema to the collection
 FlashNewsCollection.attachSchema(FlashNewsSchema)
 
+export class FlashNewsModel extends BaseModel {
+  getContent(language: string) {
+    const content = this.content[language]
+    return content || this.content[this.defaultLanguage]
+  }
+
+  availableLanguages() {
+    return Object.keys(this.content)
+  }
+}
+
+FlashNewsModel.attachCollection(FlashNewsCollection)
+
+// Hooks for methods
 export const beforeFlashNewsInsert = new Hook()
 export const afterFlashNewsInsert = new Hook()
 //
@@ -114,7 +156,7 @@ Meteor.methods({
     objectType = APP_NEWS,
     objectId = undefined
   ) {
-    check(content, Match.OneOf(String, Object))
+    check(content, Object)
     check(startsAt, Date)
     check(endsAt, Match.Optional(Date))
     check(objectType, Match.Optional(String))
