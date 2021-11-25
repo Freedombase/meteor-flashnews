@@ -34,9 +34,11 @@ Meteor.publish(
     return FlashNewsCollection.find(
       {
         ...currentFlashNewsSelector,
-        objectType: APP_NEWS
+        objectType: APP_NEWS,
+        onlyDisplayOn: { $nin: [language] },
+        startsAt: { $lte: new Date() }
       },
-      { limit }
+      { limit, sort: { startsAt: -1, createdAt: -1 } }
     )
   }
 )
@@ -57,6 +59,7 @@ Meteor.publish(
     check(language, Match.Optional(String))
     return FlashNewsCollection.find({
       ...currentFlashNewsSelector,
+      onlyDisplayOn: { $nin: [language] },
       objectType,
       objectId
     })

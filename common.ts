@@ -52,6 +52,8 @@ export type FlashNewsType = {
   objectType?: String
   objectId?: String
   content: Object
+  onlyDisplayIn?: String[]
+  onlyDisplayOn?: String[]
   getContent: (language: String) => String | Object
   availableLanguages: () => String[]
 }
@@ -124,6 +126,20 @@ export const FlashNewsSchema = new SimpleSchema({
     type: String,
     optional: true,
     index: true
+  },
+  onlyDisplayIn: {
+    type: Array,
+    optional: true
+  },
+  'onlyDisplayIn.$': {
+    type: String
+  },
+  onlyDisplayOn: {
+    type: Array,
+    optional: true
+  },
+  'onlyDisplayOn.$': {
+    type: String
   }
 })
 // Attach the schema to the collection
@@ -131,6 +147,10 @@ FlashNewsCollection.attachSchema(FlashNewsSchema)
 
 export class FlashNewsModel extends BaseModel {
   getContent(language: string) {
+    // If content in current language is not set in onlyDisplayOn then return null
+    if (this.onlyDisplayOn && !this.onlyDisplayOn.includes(language)) return null
+    // If it is set that
+    if (this.onlyDisplayIn && !this.onlyDisplayIn.includes(language)) return this.content[this.defaultLanguage]
     const content = this.content[language]
     return content || this.content[this.defaultLanguage]
   }
@@ -151,16 +171,22 @@ export const afterFlashNewsInsert = new Hook()
 Meteor.methods({
   'freedombase:flashnews-create': function (
     content,
+    defaultLanguage,
     startsAt = new Date(),
     endsAt = undefined,
     objectType = APP_NEWS,
-    objectId = undefined
+    objectId = undefined,
+    onlyDisplayIn,
+    onlyDisplayOn
   ) {
     check(content, Object)
+    check(defaultLanguage, Match.Maybe(String))
     check(startsAt, Date)
-    check(endsAt, Match.Optional(Date))
-    check(objectType, Match.Optional(String))
-    check(objectId, Match.Optional(String))
+    check(endsAt, Match.Maybe(Date))
+    check(objectType, Match.Maybe(String))
+    check(objectId, Match.Maybe(String))
+    check(onlyDisplayIn, Match.Maybe([String]))
+    check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
     let stop = false
@@ -168,15 +194,18 @@ Meteor.methods({
       const result = hook(
         userId,
         content,
+        defaultLanguage,
         startsAt,
         endsAt,
         objectType,
-        objectId
+        objectId,
+        onlyDisplayIn,
+        onlyDisplayOn
       )
       if (!result) stop = true
     })
     if (stop) {
-      throw new Meteor.Error('not-authorized')
+      throw new Meteor.Error('not-authorized', 'Unathorized')
     }
 
     // Sanitize input
@@ -187,23 +216,30 @@ Meteor.methods({
     const newsId = FlashNewsCollection.insert({
       userId,
       content,
+      defaultLanguage,
       startsAt,
       endsAt,
       objectType,
-      objectId
+      objectId,
+      onlyDisplayIn,
+      onlyDisplayOn
     })
 
-    afterFlashNewsInsert.forEach((hook) =>
-      hook({
+    afterFlashNewsInsert.forEach((hook) => {
+      const insertObject = {
         _id: newsId,
         content,
+        defaultLanguage,
         userId,
         startsAt,
         endsAt,
         objectType,
-        objectId
-      })
-    )
+        objectId,
+        onlyDisplayIn,
+        onlyDisplayOn
+      }
+      hook(insertObject)
+    })
 
     return newsId
   }
