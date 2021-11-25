@@ -37,7 +37,8 @@ Meteor.publish(
         objectType: APP_NEWS,
         $or: [
           { onlyDisplayOn: { $in: [language] } },
-          { onlyDisplayOn: { $exists: false } }
+          { onlyDisplayOn: { $exists: false } },
+          { onlyDisplayOn: null }
         ]
       },
       { limit, sort: { startsAt: -1, createdAt: -1 } }
