@@ -35,8 +35,10 @@ Meteor.publish(
       {
         ...currentFlashNewsSelector,
         objectType: APP_NEWS,
-        onlyDisplayOn: { $nin: [language] },
-        startsAt: { $lte: new Date() }
+        $or: [
+          { onlyDisplayOn: { $in: [language] } },
+          { onlyDisplayOn: { $exists: false } }
+        ]
       },
       { limit, sort: { startsAt: -1, createdAt: -1 } }
     )

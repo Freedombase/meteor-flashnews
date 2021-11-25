@@ -12,6 +12,10 @@
 
 ## v0.3.0 - 2021-11-25
 
+### Fixes
+
+* Fix a switched `$gte` and `$lte` in `currentFlashNewsSelector`
+
 ### New features
 
 * Added `onlyDisplayIn` and `onlyDisplayOn` to the schema and updated the `getContent` method on document and publications to allow showing flashnews only in designated language or for a particular language. These are arrays to allow for multiple languages to be specified.

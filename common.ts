@@ -10,11 +10,11 @@ export const APP_NEWS = 'meteorAppNews'
 export const currentFlashNewsSelector = {
   $and: [
     {
-      $or: [{ startsAt: { $gte: new Date() } }, { endsAt: { $exists: false } }]
+      $or: [{ startsAt: { $lte: new Date() } }, { endsAt: { $exists: false } }]
     },
     {
       $or: [
-        { endsAt: { $lte: new Date() } },
+        { endsAt: { $gte: new Date() } },
         { endsAt: null },
         { endsAt: { $exists: false } }
       ]
@@ -148,9 +148,11 @@ FlashNewsCollection.attachSchema(FlashNewsSchema)
 export class FlashNewsModel extends BaseModel {
   getContent(language: string) {
     // If content in current language is not set in onlyDisplayOn then return null
-    if (this.onlyDisplayOn && !this.onlyDisplayOn.includes(language)) return null
+    if (this.onlyDisplayOn && !this.onlyDisplayOn.includes(language))
+      return null
     // If it is set that
-    if (this.onlyDisplayIn && !this.onlyDisplayIn.includes(language)) return this.content[this.defaultLanguage]
+    if (this.onlyDisplayIn && !this.onlyDisplayIn.includes(language))
+      return this.content[this.defaultLanguage]
     const content = this.content[language]
     return content || this.content[this.defaultLanguage]
   }
