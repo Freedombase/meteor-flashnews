@@ -10,6 +10,16 @@
 
 ### Deprecated
 
+## v0.3.1 - 2021-12-01
+### New features
+
+* Added JSDocs to more functions for better documentation
+* Updated README with documentation
+
+### Fixes
+
+* Copied `onlyDisplayOn` logic to `freedombase:flashnews-getFor` subscription
+
 ## v0.3.0 - 2021-11-25
 
 ### Fixes

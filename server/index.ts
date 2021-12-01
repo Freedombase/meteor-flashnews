@@ -24,7 +24,7 @@ export {
  * Gets current flash news for the site
  * @param limit {Number}
  * @param language {String}
- * @return {Mongo.Cursor}
+ * @returns {Mongo.Cursor}
  */
 Meteor.publish(
   'freedombase:flashnews-getMain',
@@ -57,12 +57,16 @@ Meteor.publish(
   'freedombase:flashnews-getFor',
   function (objectType: String, objectId: String, limit = 5, language = 'en') {
     check(objectType, String)
-    check(objectId, String)
+    check(objectId, Match.Optional(String))
     check(limit, Match.Optional(Number))
     check(language, Match.Optional(String))
     return FlashNewsCollection.find({
       ...currentFlashNewsSelector,
-      onlyDisplayOn: { $nin: [language] },
+      $or: [
+        { onlyDisplayOn: { $in: [language] } },
+        { onlyDisplayOn: { $exists: false } },
+        { onlyDisplayOn: null }
+      ],
       objectType,
       objectId
     })
