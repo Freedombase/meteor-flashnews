@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        meteor: [ '2.3', '2.5.1' ]
+        meteor: [ '2.5.1' ]
     steps:
       - name: checkout
         uses: actions/checkout@v2
