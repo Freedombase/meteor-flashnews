@@ -20,8 +20,8 @@ jobs:
 
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v1
-          with:
-            meteor-release: ${{ matrix.meteor }}
+        with:
+          meteor-release: ${{ matrix.meteor }}
       - name: cache dependencies
         uses: actions/cache@v1
         with:
