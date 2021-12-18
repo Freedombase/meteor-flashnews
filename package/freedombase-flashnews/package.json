@@ -14,7 +14,7 @@
   "homepage": "https://github.com/Meteor-Community-Packages/template-package#readme",
   "readme": "README.md",
   "scripts": {
-    "test": "npm run lint && meteor test-packages ./",
+    "test": "npm run lint && meteor test-packages ../..",
     "lint": "./node_modules/.bin/standard --fix",
     "publish": "meteor npm i && npm prune --production && meteor publish && meteor npm i",
     "all-contributors": "./node_modules/.bin/all-contributors",
@@ -23,6 +23,7 @@
   "author": "Jan Dvorak",
   "license": "MIT",
   "standard": {
+    "env": [ "mocha" ],
     "parser": "babel-eslint"
   },
   "funding": {

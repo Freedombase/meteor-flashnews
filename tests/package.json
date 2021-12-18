@@ -1,0 +1,14 @@
+{
+  "name": "tests",
+  "private": true,
+  "scripts": {
+    "test": "METEOR_PACKAGE_DIRS=../package meteor test --once --driver-package meteortesting:mocha",
+    "test-app": "METEOR_PACKAGE_DIRS=../package TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.15.4",
+    "chai": "^4.3.4",
+    "meteor-node-stubs": "^1.1.0",
+    "simpl-schema": "^1.12.0"
+  }
+}

@@ -1,14 +1,14 @@
 /* global Package */
 Package.describe({
   name: 'freedombase:flashnews',
-  version: '0.3.1',
+  version: '1.0.0',
   // Brief, one-line summary of the package.
   summary: 'Timed and localized flash messages for your Meteor app ',
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/Freedombase/meteor-flashnews',
   // By default, Meteor will default to using README.md for documentation.
   // To avoid submitting documentation, set this field to null.
-  documentation: 'README.md'
+  documentation: '../README.md'
 })
 
 Package.onUse(function (api) {
@@ -24,8 +24,11 @@ Package.onUse(function (api) {
 })
 
 Package.onTest(function (api) {
+  Npm.depends({
+    chai: "4.3.4"
+  })
   api.use(['ecmascript', 'typescript', 'accounts-base', 'accounts-password'])
-  api.use('tinytest')
+  api.use('meteortesting:mocha')
   api.use('freedombase:flashnews')
-  api.addFiles('./tests/package-tests.ts')
+  api.addFiles('./tests/package-tests.ts', 'server')
 })
