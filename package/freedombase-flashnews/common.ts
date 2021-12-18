@@ -227,7 +227,7 @@ Meteor.methods({
       if (!result) stop = true
     })
     if (stop) {
-      throw new Meteor.Error('not-authorized', 'Unathorized')
+      throw new Meteor.Error('not-authorized', 'Unauthorized')
     }
 
     // Sanitize input

@@ -18,3 +18,5 @@ hot-module-replacement@0.4.0  # Rebuilds the client if there is a change on the 
 meteortesting:mocha
 freedombase:flashnews
 accounts-password
+lmieulet:meteor-coverage
+meteortesting:browser-tests
