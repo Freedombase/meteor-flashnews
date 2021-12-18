@@ -10,6 +10,17 @@
 
 ### Deprecated
 
+## v0.4.0 - 2021-12-18
+
+### Fixes
+
+* Fixed typo in error
+
+### New features
+
+* Moved tests into their own testing app and re-structured the repository for this
+* GitHub Actions for running test has been added
+
 ## v0.3.1 - 2021-12-01
 ### New features
 
