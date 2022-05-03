@@ -10,6 +10,16 @@
 
 ### Deprecated
 
+## v0.4.1 - 2022-05-03
+
+### New features
+
+* `FlashNewsType` is now exported on server as well
+
+### Fixes
+
+* Fix type definition
+
 ## v0.4.0 - 2021-12-18
 
 ### Fixes

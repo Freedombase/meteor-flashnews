@@ -1,9 +1,9 @@
 {
-  "name": "freedombase:flashnews",
-  "version": "0.3.1",
+  "name": "meteor-freedombase-flashnews",
+  "version": "0.4.1",
   "private": true,
   "description": "Template Meteor package for FOSS",
-  "main": "package.js",
+  "main": "package/freedombase-flashnews/package.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Meteor-Community-Packages/template-package.git"
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/Meteor-Community-Packages/template-package#readme",
   "readme": "README.md",
   "scripts": {
-    "test": "npm run lint && meteor test-packages ../..",
+    "test": "npm run lint && meteor test-packages ",
     "lint": "./node_modules/.bin/standard --fix",
     "publish": "meteor npm i && npm prune --production && meteor publish && meteor npm i",
     "all-contributors": "./node_modules/.bin/all-contributors",
@@ -23,7 +23,9 @@
   "author": "Jan Dvorak",
   "license": "MIT",
   "standard": {
-    "env": [ "mocha" ],
+    "env": [
+      "mocha"
+    ],
     "parser": "babel-eslint"
   },
   "funding": {
@@ -35,10 +37,10 @@
       "pre-commit": "bash preCommit.sh"
     }
   },
-  "devDependencies": {
-    "all-contributors-cli": "^6.20.0",
-    "babel-eslint": "^10.0.3",
-    "husky": "^7.0.4",
-    "standard": "^16.0.4"
+  "dependencies": {
+    "all-contributors-cli": "6.20.0",
+    "babel-eslint": "10.0.3",
+    "husky": "7.0.4",
+    "standard": "17.0.0"
   }
 }

@@ -43,19 +43,19 @@ export const setSanitizationFunction = (func: (input: string) => string) => {
 export const FlashNewsCollection = new Mongo.Collection('freedombase:flashnews')
 
 export type FlashNewsType = {
-  _id: String
-  defaultLanguage: String
-  createdBy: String
+  _id: string
+  defaultLanguage: string
+  createdBy: string
   createdAt: Date
   startsAt?: Date
   endsAt?: Date
-  objectType?: String
-  objectId?: String
+  objectType?: string
+  objectId?: string
   content: Object
-  onlyDisplayIn?: String[]
-  onlyDisplayOn?: String[]
-  getContent: (language: String) => String | Object
-  availableLanguages: () => String[]
+  onlyDisplayIn?: string[]
+  onlyDisplayOn?: string[]
+  getContent: (language: String) => string | object
+  availableLanguages: () => string[]
 }
 
 export const FlashNewsSchema = new SimpleSchema({

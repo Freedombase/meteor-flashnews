@@ -20,6 +20,8 @@ export {
   FlashNewsCollection
 }
 
+export type { FlashNewsType } from '../common'
+
 /**
  * Gets current flash news for the site
  * @param limit {Number}
