@@ -52,7 +52,6 @@ beforeFlashNewsInsert.register((
   endsAt,
   objectType,
   objectId,
-  onlyDisplayIn,
   onlyDisplayOn) => {
   // Here check the user's credentials and return true if to proceed or false if to return unauthorized error
   return !!userId
@@ -69,7 +68,6 @@ afterFlashNewsInsert.register(({
     endsAt,
     objectType,
     objectId,
-    onlyDisplayIn,
     onlyDisplayOn
 }) => {
   // Returns the details of the inserted news.
@@ -85,7 +83,6 @@ Create a new flash news
 * @param endsAt {Date} Add a date when the news should stop being displayed, undefined by default.
 * @param objectType {String} APP_NEWS by default, but you can set here your own and in combination with objectId you can for example create custom news feed for groups.
 * @param objectId {String} Use in combination with objectType to specify a specific object under which to display the news.
-* @param onlyDisplayIn {String[]} Specify which languages should the news by displayed in, if the requested language is not available then defaultLanguage will be used.
 * @param onlyDisplayOn {String[]} Only display content to languages specified in this array. If the language does not match any in this array it will not show the news.
 
 ### Subscriptions
@@ -107,7 +104,7 @@ Gets current flash news for the given object
 Once you retrieve the news, you can call the following methods on the document.
 ### `getContent`
 Takes in the language you want to display the news in and returns the content given all the constraints set to it.
-You this method to properly retrieve the content.
+If the language you have requested is not available then it will use the default language, unless you have set `onlyDisplayOn`.
 
 ```js
 // subscription freedombase:flashnews-getMain
@@ -119,7 +116,7 @@ const newsList = news.map((item) => {
 ```
 
 ### `availableLanguages`
-Lists all the available languages for the current news.
+Lists all the available languages for the current news based on the keys in `content`.
 
 ## Contributors ✨
 

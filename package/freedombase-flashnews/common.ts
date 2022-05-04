@@ -52,7 +52,6 @@ export type FlashNewsType = {
   objectType?: string
   objectId?: string
   content: Object
-  onlyDisplayIn?: string[]
   onlyDisplayOn?: string[]
   getContent: (language: String) => string | object
   availableLanguages: () => string[]
@@ -127,13 +126,6 @@ export const FlashNewsSchema = new SimpleSchema({
     optional: true,
     index: true
   },
-  onlyDisplayIn: {
-    type: Array,
-    optional: true
-  },
-  'onlyDisplayIn.$': {
-    type: String
-  },
   onlyDisplayOn: {
     type: Array,
     optional: true
@@ -156,8 +148,11 @@ export class FlashNewsModel extends BaseModel {
     if (this.onlyDisplayOn && !this.onlyDisplayOn.includes(language))
       return null
     // If it is set that
-    if (this.onlyDisplayIn && !this.onlyDisplayIn.includes(language))
+    const availableLanguages = this.availableLanguages()
+    if (!availableLanguages.includes(language)) {
+      // TODO account for similar languages and locales like cs <> sk, de-DE <> de-AU
       return this.content[this.defaultLanguage]
+    }
     const content = this.content[language]
     return content || this.content[this.defaultLanguage]
   }
@@ -188,7 +183,6 @@ Meteor.methods({
    * @param endsAt {Date} Add a date when the news should stop being displayed, undefined by default.
    * @param objectType {String} APP_NEWS by default, but you can set here your own and in combination with objectId you can for example create custom news feed for groups.
    * @param objectId {String} Use in combination with objectType to specify a specific object under which to display the news.
-   * @param onlyDisplayIn {String[]} Specify which languages should the news by displayed in, if the requested language is not available then defaultLanguage will be used.
    * @param onlyDisplayOn {String[]} Only display content to languages specified in this array. If the language does not match any in this array it will not show the news.
    */
   'freedombase:flashnews-create': function (
@@ -198,7 +192,6 @@ Meteor.methods({
     endsAt = undefined,
     objectType = APP_NEWS,
     objectId = undefined,
-    onlyDisplayIn,
     onlyDisplayOn
   ) {
     check(content, Object)
@@ -207,7 +200,6 @@ Meteor.methods({
     check(endsAt, Match.Maybe(Date))
     check(objectType, Match.Maybe(String))
     check(objectId, Match.Maybe(String))
-    check(onlyDisplayIn, Match.Maybe([String]))
     check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
@@ -221,7 +213,6 @@ Meteor.methods({
         endsAt,
         objectType,
         objectId,
-        onlyDisplayIn,
         onlyDisplayOn
       )
       if (!result) stop = true
@@ -243,7 +234,6 @@ Meteor.methods({
       endsAt,
       objectType,
       objectId,
-      onlyDisplayIn,
       onlyDisplayOn
     })
 
@@ -257,7 +247,6 @@ Meteor.methods({
         endsAt,
         objectType,
         objectId,
-        onlyDisplayIn,
         onlyDisplayOn
       }
       hook(insertObject)

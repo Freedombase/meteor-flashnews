@@ -1,7 +1,7 @@
 /* global Package */
 Package.describe({
   name: 'freedombase:flashnews',
-  version: '0.4.1',
+  version: '0.5.0',
   // Brief, one-line summary of the package.
   summary: 'Timed and localized flash messages for your Meteor app ',
   // URL to the Git repository containing the source code for this package.

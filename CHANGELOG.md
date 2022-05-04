@@ -10,6 +10,12 @@
 
 ### Deprecated
 
+## v0.5 - 2022-05-04
+
+### Breaking changes
+
+* Removed `onlyDisplayIn` as these values can be taken from `content` and what languages are defined there. As such all the methods, hooks, etc. have this property removed.
+
 ## v0.4.1 - 2022-05-03
 
 ### New features
