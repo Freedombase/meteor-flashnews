@@ -6,11 +6,11 @@
     "test-app": "TEST_BROWSER_DRIVER=puppeteer METEOR_PACKAGE_DIRS=../package TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha --extra-packages lmieulet:meteor-coverage"
   },
   "dependencies": {
-    "@babel/runtime": "^7.15.4",
-    "@types/chai": "^4.3.0",
-    "@types/mocha": "^9.0.0",
-    "chai": "^4.3.4",
-    "meteor-node-stubs": "^1.1.0",
+    "@babel/runtime": "^7.17.9",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "meteor-node-stubs": "^1.2.3",
     "puppeteer": "^5.5.0",
     "simpl-schema": "^1.12.0"
   }

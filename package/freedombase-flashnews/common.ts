@@ -227,7 +227,7 @@ Meteor.methods({
     }
 
     const newsId = FlashNewsCollection.insert({
-      userId,
+      createdBy: userId,
       content,
       defaultLanguage,
       startsAt,
@@ -242,7 +242,7 @@ Meteor.methods({
         _id: newsId,
         content,
         defaultLanguage,
-        userId,
+        createdBy: userId,
         startsAt,
         endsAt,
         objectType,

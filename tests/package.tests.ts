@@ -13,6 +13,7 @@ let userId
 if (Meteor.isTest) {
   Meteor.methods({
     'loginUser': function() {
+      console.info("Setting userId on server", userId)
       this.setUserId(userId)
     }
   })
@@ -25,7 +26,7 @@ describe('freedombase:flashnews', function() {
       Meteor.users.remove({})
     }
 
-    beforeFlashNewsInsert.register(function(userId, content, startsAt, endsAt, objectType, objectId, onlyDisplayIn, onlyDisplayOn) {
+    beforeFlashNewsInsert.register(function(userId, content, startsAt, endsAt, objectType, objectId, onlyDisplayOn) {
       return !!userId
     })
 
@@ -58,13 +59,14 @@ describe('freedombase:flashnews', function() {
       if (Meteor.isServer) {
         const method = Meteor.server.method_handlers.loginUser
         method.apply()
+        expect(Meteor.userId(), 'To be logged in on server').to.be.instanceOf(String)
       } else {
         const user = new Promise((resolve, reject) => Meteor.loginWithPassword({ username: 'test' }, 'test1234', (error, response) => {
           if (error) reject()
           if (response) resolve(response)
         }))
         user.then(function(user) {
-          expect(user, 'To be logged in').to.be.instanceOf(String)
+          expect(user, 'To be logged in on client').to.be.instanceOf(String)
           userId = user
         })
       }
@@ -81,7 +83,7 @@ describe('freedombase:flashnews', function() {
       })
 
       // Add with onlyDisplayOn
-      Meteor.call('freedombase:flashnews-create', { en: 'Hello universe! 3', cs: 'Ahoj vesmire! 3' }, 'en', new Date(), undefined, APP_NEWS, undefined, undefined, ['cs'], function(error, result) {
+      Meteor.call('freedombase:flashnews-create', { en: 'Hello universe! 3', cs: 'Ahoj vesmire! 3' }, 'en', new Date(), undefined, APP_NEWS, undefined, ['cs'], function(error, result) {
         assert.isUndefined(error)
         assert.isDefined(result)
       })
@@ -92,7 +94,7 @@ describe('freedombase:flashnews', function() {
         assert.isDefined(result)
       })
 
-      Meteor.call('freedombase:flashnews-create', { en: 'Hello universe! 4', cs: 'Ahoj vesmire! 4', jp: 'Should not display' }, 'en', new Date(), undefined, APP_NEWS, undefined, undefined, undefined, ['en', 'cs'], function(error, result) {
+      Meteor.call('freedombase:flashnews-create', { en: 'Hello universe! 4', cs: 'Ahoj vesmire! 4', jp: 'Should not display' }, 'en', new Date(), undefined, APP_NEWS, undefined, undefined, ['en', 'cs'], function(error, result) {
         assert.isUndefined(error)
         assert.isDefined(result)
       })

@@ -10,6 +10,13 @@
 
 ### Deprecated
 
+## v0.5.1 - 2022-05-05
+
+### Fixes
+
+* Fixed use of `userId` instead of `createdBy` in hook object.
+* Updated test app
+
 ## v0.5 - 2022-05-04
 
 ### Breaking changes
