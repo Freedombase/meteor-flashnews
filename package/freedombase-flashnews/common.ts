@@ -203,6 +203,8 @@ Meteor.methods({
     check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
+    if (!userId) throw new Meteor.Error('403', 'User is required to create a flash news!')
+
     let stop = false
     beforeFlashNewsInsert.forEach((hook) => {
       const result = hook(
