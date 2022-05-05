@@ -17,6 +17,7 @@
 * Fixed use of `userId` instead of `createdBy` in hook object.
 * Throw if user is not signed in when calling `freedombase:flashnews-create`
 * Updated test app
+* Add missing limit and sort to `freedombase:flashnews-getFor` publication
 
 ## v0.5 - 2022-05-04
 

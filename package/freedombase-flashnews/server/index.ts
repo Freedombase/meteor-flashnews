@@ -71,6 +71,6 @@ Meteor.publish(
       ],
       objectType,
       objectId
-    })
+    }, { limit, sort: { startsAt: -1, createdAt: -1 } })
   }
 )
