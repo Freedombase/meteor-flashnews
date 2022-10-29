@@ -29,8 +29,8 @@
     "parser": "babel-eslint"
   },
   "funding": {
-    "type": "PayPal",
-    "url": "https://www.paypal.me/JDvorak"
+    "type": "GitHub",
+    "url": "https://github.com/sponsors/StorytellerCZ"
   },
   "husky": {
     "hooks": {
@@ -38,9 +38,9 @@
     }
   },
   "dependencies": {
-    "all-contributors-cli": "6.20.0",
+    "all-contributors-cli": "6.24.0",
     "babel-eslint": "10.0.3",
-    "husky": "7.0.4",
+    "husky": "8.0.1",
     "standard": "17.0.0"
   }
 }
