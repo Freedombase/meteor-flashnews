@@ -7,19 +7,25 @@ import { BaseModel } from 'meteor/socialize:base-model'
 
 export const APP_NEWS = 'meteorAppNews'
 
-export const currentFlashNewsSelector = {
-  $and: [
-    {
-      $or: [{ startsAt: { $lte: new Date() } }, { endsAt: { $exists: false } }]
-    },
-    {
+export const currentFlashNewsSelector = (now?: Date) => {
+  if (now || Meteor.isClient) {
+    if (Meteor.isClient && !now) now = new Date()
+    return {
+      startsAt: { $lte: now },
       $or: [
         { endsAt: { $gte: new Date() } },
         { endsAt: null },
         { endsAt: { $exists: false } }
       ]
     }
-  ]
+  }
+  return {
+    $or: [
+      { endsAt: { $gte: new Date() } },
+      { endsAt: null },
+      { endsAt: { $exists: false } }
+    ]
+  }
 }
 
 /**

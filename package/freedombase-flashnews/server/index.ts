@@ -30,12 +30,13 @@ export type { FlashNewsType } from '../common'
  */
 Meteor.publish(
   'freedombase:flashnews-getMain',
-  (limit = 3, language = 'en') => {
-    check(limit, Match.Optional(Number))
-    check(language, Match.Optional(String))
+  async (limit = 3, language = 'en', clientTime?: Date) => {
+    check(limit, Match.Maybe(Number))
+    check(language, Match.Maybe(String))
+    check(clientTime, Match.Maybe(Date))
     return FlashNewsCollection.find(
       {
-        ...currentFlashNewsSelector,
+        ...currentFlashNewsSelector(clientTime),
         objectType: APP_NEWS,
         $or: [
           { onlyDisplayOn: { $in: [language] } },
@@ -53,24 +54,35 @@ Meteor.publish(
  * @param objectId {String}
  * @param limit {Number}
  * @param language {String}
+ * @param clientTime {Date}
  * @returns {Mongo.Cursor}
  */
 Meteor.publish(
   'freedombase:flashnews-getFor',
-  function (objectType: String, objectId: String, limit = 5, language = 'en') {
+  (
+    objectType: String,
+    objectId: String,
+    limit = 5,
+    language = 'en',
+    clientTime?: Date
+  ) => {
     check(objectType, String)
-    check(objectId, Match.Optional(String))
-    check(limit, Match.Optional(Number))
-    check(language, Match.Optional(String))
-    return FlashNewsCollection.find({
-      ...currentFlashNewsSelector,
-      $or: [
-        { onlyDisplayOn: { $in: [language] } },
-        { onlyDisplayOn: { $exists: false } },
-        { onlyDisplayOn: null }
-      ],
-      objectType,
-      objectId
-    }, { limit, sort: { startsAt: -1, createdAt: -1 } })
+    check(objectId, Match.Maybe(String))
+    check(limit, Match.Maybe(Number))
+    check(language, Match.Maybe(String))
+    check(clientTime, Match.Maybe(Date))
+    return FlashNewsCollection.find(
+      {
+        ...currentFlashNewsSelector(clientTime),
+        $or: [
+          { onlyDisplayOn: { $in: [language] } },
+          { onlyDisplayOn: { $exists: false } },
+          { onlyDisplayOn: null }
+        ],
+        objectType,
+        objectId
+      },
+      { limit, sort: { startsAt: -1, createdAt: -1 } }
+    )
   }
 )

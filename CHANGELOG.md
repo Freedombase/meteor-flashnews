@@ -10,6 +10,11 @@
 
 ### Deprecated
 
+## v0.5.2 - 2023-03-08
+
+### Breaking changes
+* `currentFlashNewsSelector` has been updated to function
+
 ## v0.5.1 - 2022-05-05
 
 ### Fixes
