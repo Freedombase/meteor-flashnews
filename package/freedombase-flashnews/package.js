@@ -15,7 +15,7 @@ Package.onUse(function (api) {
   api.versionsFrom(['2.8.1', '3.0-beta.0'])
   api.use(['ecmascript', 'typescript', 'mongo', 'callback-hook'])
   api.use([
-    'aldeed:collection2@3.5.0',
+    'aldeed:collection2@4.0.0-beta.6',
     'socialize:base-model@1.1.7'
   ])
   api.mainModule('common.ts', 'client')
