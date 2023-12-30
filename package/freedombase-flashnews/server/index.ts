@@ -22,6 +22,13 @@ export {
 
 export type { FlashNewsType } from '../common'
 
+// Indexes creation
+FlashNewsCollection.createIndexAsync({ objectType: 1, endsAt: -1, onlyDisplayOn: 1 })
+FlashNewsCollection.createIndexAsync({ objectType: 1, startsAt: -1, endsAt: -1, onlyDisplayOn: 1 })
+FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1, endsAt: -1, onlyDisplayOn: 1 })
+FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1, startsAt: -1, endsAt: -1, onlyDisplayOn: 1 })
+FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1 })
+
 /**
  * Gets current flash news for the site
  * @param limit {Number}
@@ -36,8 +43,8 @@ Meteor.publish(
     check(clientTime, Match.Maybe(Date))
     return FlashNewsCollection.find(
       {
-        ...currentFlashNewsSelector(clientTime),
         objectType: APP_NEWS,
+        ...currentFlashNewsSelector(clientTime),
         $or: [
           { onlyDisplayOn: { $in: [language] } },
           { onlyDisplayOn: { $exists: false } },
@@ -73,14 +80,14 @@ Meteor.publish(
     check(clientTime, Match.Maybe(Date))
     return FlashNewsCollection.find(
       {
+        objectId,
+        objectType,
         ...currentFlashNewsSelector(clientTime),
         $or: [
           { onlyDisplayOn: { $in: [language] } },
           { onlyDisplayOn: { $exists: false } },
           { onlyDisplayOn: null }
-        ],
-        objectType,
-        objectId
+        ]
       },
       { limit, sort: { startsAt: -1, createdAt: -1 } }
     )

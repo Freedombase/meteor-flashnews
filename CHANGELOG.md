@@ -10,6 +10,16 @@
 
 ### Deprecated
 
+## v0.6.0 - 2023-12-30
+
+### Breaking changes
+* Removed `aldeed:schema-index` as its functionality has been replaced by Meteor default `createIndexAsync` method.
+* Minimum Meteor version is now `2.8.1`
+* Added version range for Meteor `3.0-beta.0`
+
+### New features
+* Added more granular index creation to account for the default publications and methods.
+
 ## v0.5.2 - 2023-03-08
 
 ### Breaking changes

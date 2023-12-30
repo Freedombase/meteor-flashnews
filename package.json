@@ -1,6 +1,6 @@
 {
   "name": "meteor-freedombase-flashnews",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "private": true,
   "description": "Template Meteor package for FOSS",
   "main": "package/freedombase-flashnews/package.js",
@@ -16,7 +16,7 @@
   "scripts": {
     "test": "npm run lint && meteor test-packages ",
     "lint": "./node_modules/.bin/standard --fix",
-    "publish": "meteor npm i && npm prune --production && meteor publish && meteor npm i",
+    "publish": "meteor npm i && npm prune --production && cd ./package/freedombase-flashnews/ && meteor publish && cd ../../ && meteor npm i",
     "all-contributors": "./node_modules/.bin/all-contributors",
     "all-contributors-generate": "./node_modules/.bin/all-contributors generate"
   },
@@ -38,9 +38,9 @@
     }
   },
   "dependencies": {
-    "all-contributors-cli": "6.24.0",
+    "all-contributors-cli": "6.26.1",
     "babel-eslint": "10.0.3",
-    "husky": "8.0.1",
-    "standard": "17.0.0"
+    "husky": "8.0.3",
+    "standard": "17.1.0"
   }
 }

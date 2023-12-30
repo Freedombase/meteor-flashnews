@@ -104,7 +104,6 @@ export const FlashNewsSchema = new SimpleSchema({
   startsAt: {
     type: Date,
     optional: true,
-    index: -1,
     autoValue() {
       const createdAt = this.field('createdAt')
       const startsAt = this.field('startsAt')
@@ -115,13 +114,11 @@ export const FlashNewsSchema = new SimpleSchema({
   },
   endsAt: {
     type: Date,
-    index: true,
     optional: true
   },
   objectType: {
     type: String,
     optional: true,
-    index: true,
     autoValue() {
       const type = this.field('objectType')
       if (this.isUpsert && !type.isSet) return APP_NEWS
@@ -129,8 +126,7 @@ export const FlashNewsSchema = new SimpleSchema({
   },
   objectId: {
     type: String,
-    optional: true,
-    index: true
+    optional: true
   },
   onlyDisplayOn: {
     type: Array,
@@ -140,6 +136,7 @@ export const FlashNewsSchema = new SimpleSchema({
     type: String
   }
 })
+
 // Attach the schema to the collection
 FlashNewsCollection.attachSchema(FlashNewsSchema)
 
