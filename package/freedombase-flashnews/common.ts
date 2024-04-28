@@ -1,4 +1,4 @@
-import SimpleSchema from 'simpl-schema'
+import SimpleSchema from 'meteor/aldeed:simple-schema'
 import { Mongo } from 'meteor/mongo'
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
@@ -7,15 +7,30 @@ import { BaseModel } from 'meteor/socialize:base-model'
 
 export const APP_NEWS = 'meteorAppNews'
 
-export const currentFlashNewsSelector = (now?: Date) => {
+export const currentFlashNewsSelector = (now?: Date, language) => {
   if (now || Meteor.isClient) {
+    // const twoWeeks = 1000 * 60 * 60 * 24 * 14
+    // const twoWeeksAgo = new Date(new Date().getTime() - twoWeeks)
+
     if (Meteor.isClient && !now) now = new Date()
     return {
-      startsAt: { $lte: now },
-      $or: [
-        { endsAt: { $gte: new Date() } },
-        { endsAt: null },
-        { endsAt: { $exists: false } }
+      startsAt: { $lte: now /*, $gte: twoWeeksAgo */ },
+      $and: [
+        {
+          $or: [
+            { endsAt: { $gte: new Date() } },
+            { endsAt: null },
+            { endsAt: { $exists: false } }
+          ]
+        },
+        {
+          $or: [
+            { onlyDisplayOn: { $in: [language] } },
+            { onlyDisplayOn: { $exists: false } },
+            { onlyDisplayOn: [] },
+            { onlyDisplayOn: null }
+          ]
+        }
       ]
     }
   }

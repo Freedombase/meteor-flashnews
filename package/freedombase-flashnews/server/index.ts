@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import {
-  APP_NEWS,
-  FlashNewsCollection,
   afterFlashNewsInsert,
+  APP_NEWS,
   beforeFlashNewsInsert,
-  setSanitizationFunction,
+  currentFlashNewsSelector,
+  FlashNewsCollection,
   FlashNewsSchema,
-  currentFlashNewsSelector
+  setSanitizationFunction
 } from '../common'
 
 export {
@@ -22,13 +22,6 @@ export {
 
 export type { FlashNewsType } from '../common'
 
-// Indexes creation
-FlashNewsCollection.createIndexAsync({ objectType: 1, endsAt: -1, onlyDisplayOn: 1 })
-FlashNewsCollection.createIndexAsync({ objectType: 1, startsAt: -1, endsAt: -1, onlyDisplayOn: 1 })
-FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1, endsAt: -1, onlyDisplayOn: 1 })
-FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1, startsAt: -1, endsAt: -1, onlyDisplayOn: 1 })
-FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1 })
-
 /**
  * Gets current flash news for the site
  * @param limit {Number}
@@ -37,19 +30,15 @@ FlashNewsCollection.createIndexAsync({ objectId: 1, objectType: 1 })
  */
 Meteor.publish(
   'freedombase:flashnews-getMain',
-  async (limit = 3, language = 'en', clientTime?: Date) => {
+  async function (limit = 3, language = 'en', clientTime?: Date) {
+    this.unblock()
     check(limit, Match.Maybe(Number))
     check(language, Match.Maybe(String))
     check(clientTime, Match.Maybe(Date))
     return FlashNewsCollection.find(
       {
-        objectType: APP_NEWS,
-        ...currentFlashNewsSelector(clientTime),
-        $or: [
-          { onlyDisplayOn: { $in: [language] } },
-          { onlyDisplayOn: { $exists: false } },
-          { onlyDisplayOn: null }
-        ]
+        ...currentFlashNewsSelector(clientTime, language),
+        objectType: APP_NEWS
       },
       { limit, sort: { startsAt: -1, createdAt: -1 } }
     )
@@ -66,28 +55,25 @@ Meteor.publish(
  */
 Meteor.publish(
   'freedombase:flashnews-getFor',
-  (
+  function (
     objectType: String,
     objectId: String,
     limit = 5,
     language = 'en',
     clientTime?: Date
-  ) => {
+  ) {
+    this.unblock()
     check(objectType, String)
     check(objectId, Match.Maybe(String))
     check(limit, Match.Maybe(Number))
     check(language, Match.Maybe(String))
     check(clientTime, Match.Maybe(Date))
+
     return FlashNewsCollection.find(
       {
-        objectId,
+        ...currentFlashNewsSelector(clientTime, language),
         objectType,
-        ...currentFlashNewsSelector(clientTime),
-        $or: [
-          { onlyDisplayOn: { $in: [language] } },
-          { onlyDisplayOn: { $exists: false } },
-          { onlyDisplayOn: null }
-        ]
+        objectId
       },
       { limit, sort: { startsAt: -1, createdAt: -1 } }
     )

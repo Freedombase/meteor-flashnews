@@ -10,6 +10,20 @@
 
 ### Deprecated
 
+## v0.7.0 - 2024-04-28
+
+### Breaking changes
+* Replaced `simpl-schema` with `meteor/aldeed:simple-schema`
+
+### Fixes
+* Fix common display issues
+* Added version range for Meteor `3.0-rc.0`
+
+## v0.6.1 - 2024-01-02
+
+### Fixes
+* Add `ddp` dependency which is needed for properly working with Meteor 3.0
+
 ## v0.6.0 - 2023-12-30
 
 ### Breaking changes
