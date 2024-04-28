@@ -79,3 +79,24 @@ Meteor.publish(
     )
   }
 )
+
+// Indexes
+FlashNewsCollection.createIndexAsync({
+  objectType: 1,
+  objectId: 1,
+  startsAt: -1,
+  endsAt: -1,
+  onlyDisplayOn: 1
+})
+FlashNewsCollection.createIndexAsync({
+  objectType: 1,
+  objectId: 1,
+  endsAt: -1,
+  onlyDisplayOn: 1
+})
+FlashNewsCollection.createIndexAsync({
+  objectType: 1,
+  startsAt: -1,
+  endsAt: -1,
+  onlyDisplayOn: 1
+})
