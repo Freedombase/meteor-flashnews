@@ -10,6 +10,18 @@
 
 ### Deprecated
 
+## v0.7.2 - 2024-05-04
+
+### Fixes
+
+* Added missing dependency list of `aldeed:simple-schema`
+
+## v0.7.1 - 2024-05-04
+
+### Fixes
+
+* Added missing indexes
+
 ## v0.7.0 - 2024-04-28
 
 ### Breaking changes
