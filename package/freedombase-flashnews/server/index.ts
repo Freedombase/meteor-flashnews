@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor'
 import { check, Match } from 'meteor/check'
 import {
+  afterFlashNewsDelete,
   afterFlashNewsInsert,
   APP_NEWS,
+  beforeFlashNewsDelete,
   beforeFlashNewsInsert,
   currentFlashNewsSelector,
   FlashNewsCollection,
@@ -17,7 +19,9 @@ export {
   FlashNewsSchema,
   currentFlashNewsSelector,
   APP_NEWS,
-  FlashNewsCollection
+  FlashNewsCollection,
+  beforeFlashNewsDelete,
+  afterFlashNewsDelete
 }
 
 export type { FlashNewsType } from '../common'

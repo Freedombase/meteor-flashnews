@@ -35,10 +35,10 @@ export const currentFlashNewsSelector = (now?: Date, language) => {
     }
   }
   return {
-    $and: [
-      {
-        $or: [
-          { endsAt: { $gte: new Date() } },
+    $or: [
+      { endsAt: { $gte: new Date() } },
+      { endsAt: null },
+      { endsAt: { $exists: false } }
           { endsAt: null },
           { endsAt: { $exists: false } }
         ]
@@ -73,8 +73,6 @@ export const setSanitizationFunction = (func: (input: string) => string) => {
   if (typeof func === 'function') sanitizationFunction = func
 }
 
-export const FlashNewsCollection = new Mongo.Collection('freedombase:flashnews')
-
 export type FlashNewsType = {
   _id: string
   defaultLanguage: string
@@ -89,6 +87,10 @@ export type FlashNewsType = {
   getContent: (language: String) => string | object
   availableLanguages: () => string[]
 }
+
+export const FlashNewsCollection = new Mongo.Collection<FlashNewsType>(
+  'freedombase:flashnews'
+)
 
 export const FlashNewsSchema = new SimpleSchema({
   content: {
@@ -175,7 +177,10 @@ export class FlashNewsModel extends BaseModel {
    */
   getContent(language: string) {
     // If content in current language is not set in onlyDisplayOn then return null
-    if (this.onlyDisplayOn && !this.onlyDisplayOn.includes(language))
+    if (
+      this.onlyDisplayOn?.length > 0 &&
+      !this.onlyDisplayOn.includes(language)
+    )
       return null
     // If it is set that
     const availableLanguages = this.availableLanguages()
@@ -201,6 +206,10 @@ FlashNewsModel.attachCollection(FlashNewsCollection)
 // Hooks for methods
 export const beforeFlashNewsInsert = new Hook()
 export const afterFlashNewsInsert = new Hook()
+
+export const beforeFlashNewsDelete = new Hook()
+export const afterFlashNewsDelete = new Hook()
+
 //
 // Methods to insert new flash news
 //
@@ -215,7 +224,7 @@ Meteor.methods({
    * @param objectId {String} Use in combination with objectType to specify a specific object under which to display the news.
    * @param onlyDisplayOn {String[]} Only display content to languages specified in this array. If the language does not match any in this array it will not show the news.
    */
-  'freedombase:flashnews-create': function (
+  'freedombase:flashnews-create': async function (
     content,
     defaultLanguage,
     startsAt = new Date(),
@@ -233,7 +242,8 @@ Meteor.methods({
     check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
-    if (!userId) throw new Meteor.Error('403', 'User is required to create a flash news!')
+    if (!userId)
+      throw new Meteor.Error(403, 'User is required to create a flash news!')
 
     let stop = false
     beforeFlashNewsInsert.forEach((hook) => {
@@ -250,7 +260,7 @@ Meteor.methods({
       if (!result) stop = true
     })
     if (stop) {
-      throw new Meteor.Error('not-authorized', 'Unauthorized')
+      throw new Meteor.Error(403, 'Unauthorized')
     }
 
     // Sanitize input
@@ -258,7 +268,7 @@ Meteor.methods({
       content = sanitizationFunction(content)
     }
 
-    const newsId = FlashNewsCollection.insert({
+    const newsId = await FlashNewsCollection.insertAsync({
       createdBy: userId,
       content,
       defaultLanguage,
@@ -285,5 +295,47 @@ Meteor.methods({
     })
 
     return newsId
+  },
+  /**
+   * Delete the flash news
+   * @param newsId {String}
+   */
+  'freedombase:flashnews-delete': async function (newsId: string) {
+    check(newsId, String)
+    const userId = this.userId
+    if (!userId)
+      throw new Meteor.Error(403, 'User is required to delete a flash news!')
+
+    const news = await FlashNewsCollection.findOneAsync(
+      { _id: newsId },
+      {
+        projection: {
+          _id: 1,
+          objectType: 1,
+          objectId: 1,
+          endsAt: 1,
+          createdAt: 1,
+          onlyDisplayOn: 1
+        }
+      }
+    )
+    if (!news) throw new Meteor.Error('404', 'News not found!')
+
+    let stop = false
+    beforeFlashNewsDelete.forEach((hook) => {
+      const result = hook(userId, news)
+      if (!result) stop = true
+    })
+    if (stop) {
+      throw new Meteor.Error(403, 'Unauthorized')
+    }
+
+    const deleteReturn = await FlashNewsCollection.removeAsync({ _id: newsId })
+
+    afterFlashNewsDelete.forEach((hook) => {
+      hook(userId, news, deleteReturn)
+    })
+
+    return deleteReturn
   }
 })
