@@ -286,7 +286,7 @@ Meteor.methods({
   },
   /**
    * Delete the flash news
-   * @param newsId {String}
+   * @param newsId {String} The ID of the flash news to be deleted
    */
   'freedombase:flashnews-delete': async function (newsId: string) {
     check(newsId, String)

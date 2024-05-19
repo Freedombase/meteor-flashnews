@@ -39,7 +39,7 @@ You can import the schema for the collection and use it in your own custom funct
 
 ### Hooks
 ```js
-import { beforeFlashNewsInsert, afterFlashNewsInsert } from 'freedombase:flashnews'
+import { beforeFlashNewsInsert, afterFlashNewsInsert, beforeFlashNewsDelete, afterFlashNewsDelete } from 'freedombase:flashnews'
 ```
 
 Using `meteor/callback-hook`, you can set these hooks to be run before and after the provided insert method.
@@ -74,8 +74,22 @@ afterFlashNewsInsert.register(({
 })
 ```
 
-### Method
-`freedombase:flashnews-create`
+```js
+beforeFlashNewsDelete.register((userId, news) => {
+  // Here check the user's credentials and return true if to proceed or false if to return unauthorized error
+  return userId === news.userId
+})
+```
+
+```js
+afterFlashNewsDelete.register((userId, news, deleteReturn) => {
+  // ...
+})
+
+```
+
+### Methods
+#### `freedombase:flashnews-create`
 Create a new flash news
 * @param content {Object} An object with the different locales should have format like this: { en: 'First news', cs: 'První novinka' } or instead of strings can include object with your default structure for the given language.
 * @param defaultLanguage {String} Default language of the news. This language will be used when the requested language is not available.
@@ -84,6 +98,10 @@ Create a new flash news
 * @param objectType {String} APP_NEWS by default, but you can set here your own and in combination with objectId you can for example create custom news feed for groups.
 * @param objectId {String} Use in combination with objectType to specify a specific object under which to display the news.
 * @param onlyDisplayOn {String[]} Only display content to languages specified in this array. If the language does not match any in this array it will not show the news.
+
+#### `freedombase:flashnews-delete`
+Delete the flash news
+* @param newsId {String} The ID of the flash news to be deleted
 
 ### Subscriptions
 #### `freedombase:flashnews-getMain`

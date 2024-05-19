@@ -10,6 +10,16 @@
 
 ### Deprecated
 
+## v0.8.0 - 2024-05-19
+
+### Changes
+
+* Methods are now async
+
+### New features
+
+* Added delete method with associated hooks
+
 ## v0.7.2 - 2024-05-04
 
 ### Fixes
