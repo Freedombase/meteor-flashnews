@@ -39,18 +39,6 @@ export const currentFlashNewsSelector = (now?: Date, language) => {
       { endsAt: { $gte: new Date() } },
       { endsAt: null },
       { endsAt: { $exists: false } }
-          { endsAt: null },
-          { endsAt: { $exists: false } }
-        ]
-      },
-      {
-        $or: [
-          { onlyDisplayOn: { $in: [language] } },
-          { onlyDisplayOn: { $exists: false } },
-          { onlyDisplayOn: [] },
-          { onlyDisplayOn: null }
-        ]
-      }
     ]
   }
 }
