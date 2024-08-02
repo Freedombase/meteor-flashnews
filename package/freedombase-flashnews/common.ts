@@ -1,45 +1,41 @@
 import SimpleSchema from 'meteor/aldeed:simple-schema'
-import { Mongo } from 'meteor/mongo'
-import { Meteor } from 'meteor/meteor'
-import { check, Match } from 'meteor/check'
-import { Hook } from 'meteor/callback-hook'
 import { BaseModel } from 'meteor/socialize:base-model'
+import { Hook } from 'meteor/callback-hook'
+import { Match, check } from 'meteor/check'
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'
+import 'meteor/aldeed:collection2/dynamic'
+
+Collection2.load()
 
 export const APP_NEWS = 'meteorAppNews'
 
-export const currentFlashNewsSelector = (now?: Date, language) => {
+// TODO fix via https://github.com/peerlibrary/meteor-reactive-publish
+export const currentFlashNewsSelector = (now?: Date, language?: string) => {
   if (now || Meteor.isClient) {
-    // const twoWeeks = 1000 * 60 * 60 * 24 * 14
-    // const twoWeeksAgo = new Date(new Date().getTime() - twoWeeks)
+    const twoWeeks = 1000 * 60 * 60 * 24 * 14
+    const twoWeeksAgo = new Date(new Date().getTime() - twoWeeks)
 
     if (Meteor.isClient && !now) now = new Date()
     return {
-      startsAt: { $lte: now /*, $gte: twoWeeksAgo */ },
+      startsAt: { $lte: now, $gte: twoWeeksAgo },
       $and: [
         {
-          $or: [
-            { endsAt: { $gte: new Date() } },
-            { endsAt: null },
-            { endsAt: { $exists: false } }
-          ]
+          $or: [{ endsAt: { $gte: new Date() } }, { endsAt: null }, { endsAt: { $exists: false } }],
         },
         {
           $or: [
             { onlyDisplayOn: { $in: [language] } },
             { onlyDisplayOn: { $exists: false } },
             { onlyDisplayOn: [] },
-            { onlyDisplayOn: null }
-          ]
-        }
-      ]
+            { onlyDisplayOn: null },
+          ],
+        },
+      ],
     }
   }
   return {
-    $or: [
-      { endsAt: { $gte: new Date() } },
-      { endsAt: null },
-      { endsAt: { $exists: false } }
-    ]
+    $or: [{ endsAt: { $gte: new Date() } }, { endsAt: null }, { endsAt: { $exists: false } }],
   }
 }
 
@@ -48,7 +44,7 @@ export const currentFlashNewsSelector = (now?: Date, language) => {
  * @param textInput {String}
  * @returns {String}
  */
-let sanitizationFunction = (textInput: String) => {
+let sanitizationFunction = (textInput: string) => {
   if (!textInput) return ''
   return textInput.trim()
 }
@@ -72,18 +68,16 @@ export type FlashNewsType = {
   objectId?: string
   content: Object
   onlyDisplayOn?: string[]
-  getContent: (language: String) => string | object
+  getContent: (language: string) => string | object
   availableLanguages: () => string[]
 }
 
-export const FlashNewsCollection = new Mongo.Collection<FlashNewsType>(
-  'freedombase:flashnews'
-)
+export const FlashNewsCollection = new Mongo.Collection<FlashNewsType>('freedombase:flashnews')
 
 export const FlashNewsSchema = new SimpleSchema({
   content: {
     type: Object,
-    blackbox: true
+    blackbox: true,
     /*
      * The object looks like:
      * {
@@ -95,7 +89,7 @@ export const FlashNewsSchema = new SimpleSchema({
   },
   defaultLanguage: {
     type: String,
-    defaultValue: 'en'
+    defaultValue: 'en',
   },
   createdBy: {
     type: String,
@@ -106,7 +100,7 @@ export const FlashNewsSchema = new SimpleSchema({
       }
       return undefined
     },
-    denyUpdate: true
+    // denyUpdate: true
   },
   createdAt: {
     type: Date,
@@ -116,7 +110,7 @@ export const FlashNewsSchema = new SimpleSchema({
       }
       return this.unset()
     },
-    denyUpdate: true
+    // denyUpdate: true
   },
   startsAt: {
     type: Date,
@@ -127,11 +121,11 @@ export const FlashNewsSchema = new SimpleSchema({
       if (this.isInsert && !startsAt.isSet) {
         return createdAt.value
       }
-    }
+    },
   },
   endsAt: {
     type: Date,
-    optional: true
+    optional: true,
   },
   objectType: {
     type: String,
@@ -139,21 +133,20 @@ export const FlashNewsSchema = new SimpleSchema({
     autoValue() {
       const type = this.field('objectType')
       if (this.isUpsert && !type.isSet) return APP_NEWS
-    }
+    },
   },
   objectId: {
     type: String,
-    optional: true
+    optional: true,
   },
   onlyDisplayOn: {
     type: Array,
-    optional: true
+    optional: true,
   },
   'onlyDisplayOn.$': {
-    type: String
-  }
+    type: String,
+  },
 })
-
 // Attach the schema to the collection
 FlashNewsCollection.attachSchema(FlashNewsSchema)
 
@@ -165,11 +158,7 @@ export class FlashNewsModel extends BaseModel {
    */
   getContent(language: string) {
     // If content in current language is not set in onlyDisplayOn then return null
-    if (
-      this.onlyDisplayOn?.length > 0 &&
-      !this.onlyDisplayOn.includes(language)
-    )
-      return null
+    if (this.onlyDisplayOn?.length > 0 && !this.onlyDisplayOn.includes(language)) return null
     // If it is set that
     const availableLanguages = this.availableLanguages()
     if (!availableLanguages.includes(language)) {
@@ -219,7 +208,7 @@ Meteor.methods({
     endsAt = undefined,
     objectType = APP_NEWS,
     objectId = undefined,
-    onlyDisplayOn
+    onlyDisplayOn,
   ) {
     check(content, Object)
     check(defaultLanguage, String)
@@ -230,11 +219,10 @@ Meteor.methods({
     check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
-    if (!userId)
-      throw new Meteor.Error(403, 'User is required to create a flash news!')
+    if (!userId) throw new Meteor.Error(403, 'User is required to create a flash news!')
 
     let stop = false
-    beforeFlashNewsInsert.forEach((hook) => {
+    beforeFlashNewsInsert.forEachAsync((hook) => {
       const result = hook(
         userId,
         content,
@@ -243,7 +231,7 @@ Meteor.methods({
         endsAt,
         objectType,
         objectId,
-        onlyDisplayOn
+        onlyDisplayOn,
       )
       if (!result) stop = true
     })
@@ -264,10 +252,10 @@ Meteor.methods({
       endsAt,
       objectType,
       objectId,
-      onlyDisplayOn
+      onlyDisplayOn,
     })
 
-    afterFlashNewsInsert.forEach((hook) => {
+    afterFlashNewsInsert.forEachAsync((hook) => {
       const insertObject = {
         _id: newsId,
         content,
@@ -277,7 +265,7 @@ Meteor.methods({
         endsAt,
         objectType,
         objectId,
-        onlyDisplayOn
+        onlyDisplayOn,
       }
       hook(insertObject)
     })
@@ -286,13 +274,12 @@ Meteor.methods({
   },
   /**
    * Delete the flash news
-   * @param newsId {String} The ID of the flash news to be deleted
+   * @param newsId {String}
    */
   'freedombase:flashnews-delete': async function (newsId: string) {
     check(newsId, String)
     const userId = this.userId
-    if (!userId)
-      throw new Meteor.Error(403, 'User is required to delete a flash news!')
+    if (!userId) throw new Meteor.Error(403, 'User is required to delete a flash news!')
 
     const news = await FlashNewsCollection.findOneAsync(
       { _id: newsId },
@@ -303,14 +290,14 @@ Meteor.methods({
           objectId: 1,
           endsAt: 1,
           createdAt: 1,
-          onlyDisplayOn: 1
-        }
-      }
+          onlyDisplayOn: 1,
+        },
+      },
     )
     if (!news) throw new Meteor.Error('404', 'News not found!')
 
     let stop = false
-    beforeFlashNewsDelete.forEach((hook) => {
+    beforeFlashNewsDelete.forEachAsync((hook) => {
       const result = hook(userId, news)
       if (!result) stop = true
     })
@@ -320,10 +307,10 @@ Meteor.methods({
 
     const deleteReturn = await FlashNewsCollection.removeAsync({ _id: newsId })
 
-    afterFlashNewsDelete.forEach((hook) => {
+    afterFlashNewsDelete.forEachAsync((hook) => {
       hook(userId, news, deleteReturn)
     })
 
     return deleteReturn
-  }
+  },
 })

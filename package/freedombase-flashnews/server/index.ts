@@ -9,7 +9,7 @@ import {
   currentFlashNewsSelector,
   FlashNewsCollection,
   FlashNewsSchema,
-  setSanitizationFunction
+  setSanitizationFunction,
 } from '../common'
 
 export {
@@ -21,7 +21,7 @@ export {
   APP_NEWS,
   FlashNewsCollection,
   beforeFlashNewsDelete,
-  afterFlashNewsDelete
+  afterFlashNewsDelete,
 }
 
 export type { FlashNewsType } from '../common'
@@ -42,11 +42,11 @@ Meteor.publish(
     return FlashNewsCollection.find(
       {
         ...currentFlashNewsSelector(clientTime, language),
-        objectType: APP_NEWS
+        objectType: APP_NEWS,
       },
-      { limit, sort: { startsAt: -1, createdAt: -1 } }
+      { limit, sort: { startsAt: -1, createdAt: -1 } },
     )
-  }
+  },
 )
 /**
  * Gets current flash news for the given object
@@ -59,13 +59,7 @@ Meteor.publish(
  */
 Meteor.publish(
   'freedombase:flashnews-getFor',
-  function (
-    objectType: String,
-    objectId: String,
-    limit = 5,
-    language = 'en',
-    clientTime?: Date
-  ) {
+  function (objectType: String, objectId: String, limit = 5, language = 'en', clientTime?: Date) {
     this.unblock()
     check(objectType, String)
     check(objectId, Match.Maybe(String))
@@ -77,11 +71,11 @@ Meteor.publish(
       {
         ...currentFlashNewsSelector(clientTime, language),
         objectType,
-        objectId
+        objectId,
       },
-      { limit, sort: { startsAt: -1, createdAt: -1 } }
+      { limit, sort: { startsAt: -1, createdAt: -1 } },
     )
-  }
+  },
 )
 
 // Indexes
@@ -90,17 +84,17 @@ FlashNewsCollection.createIndexAsync({
   objectId: 1,
   startsAt: -1,
   endsAt: -1,
-  onlyDisplayOn: 1
+  onlyDisplayOn: 1,
 })
 FlashNewsCollection.createIndexAsync({
   objectType: 1,
   objectId: 1,
   endsAt: -1,
-  onlyDisplayOn: 1
+  onlyDisplayOn: 1,
 })
 FlashNewsCollection.createIndexAsync({
   objectType: 1,
   startsAt: -1,
   endsAt: -1,
-  onlyDisplayOn: 1
+  onlyDisplayOn: 1,
 })

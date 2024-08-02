@@ -10,6 +10,12 @@
 
 ### Deprecated
 
+## v1.0.0 - 2024-XX-XX
+
+### Breaking changes
+
+* Upgraded `aldeed:collection2` to v4.0.1
+
 ## v0.8.0 - 2024-05-19
 
 ### Changes
