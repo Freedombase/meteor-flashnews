@@ -25,9 +25,7 @@
   "author": "Jan Dvorak",
   "license": "MIT",
   "standard": {
-    "env": [
-      "mocha"
-    ],
+    "env": ["mocha"],
     "parser": "babel-eslint"
   },
   "funding": {
@@ -43,7 +41,6 @@
     "all-contributors-cli": "6.26.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.3",
-    "chai": "^5.1.1"
+    "@biomejs/biome": "^1.8.3"
   }
 }
