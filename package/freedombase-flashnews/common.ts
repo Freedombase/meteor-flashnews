@@ -11,7 +11,8 @@ Collection2.load()
 export const APP_NEWS = 'meteorAppNews'
 
 // TODO fix via https://github.com/peerlibrary/meteor-reactive-publish
-export const currentFlashNewsSelector = (now?: Date, language?: string) => {
+export const currentFlashNewsSelector = (_now?: Date, language?: string) => {
+  let now = _now
   if (now || Meteor.isClient) {
     const twoWeeks = 1000 * 60 * 60 * 24 * 14
     const twoWeeksAgo = new Date(new Date().getTime() - twoWeeks)
@@ -21,7 +22,11 @@ export const currentFlashNewsSelector = (now?: Date, language?: string) => {
       startsAt: { $lte: now, $gte: twoWeeksAgo },
       $and: [
         {
-          $or: [{ endsAt: { $gte: new Date() } }, { endsAt: null }, { endsAt: { $exists: false } }],
+          $or: [
+            { endsAt: { $gte: new Date() } },
+            { endsAt: null },
+            { endsAt: { $exists: false } },
+          ],
         },
         {
           $or: [
@@ -35,7 +40,11 @@ export const currentFlashNewsSelector = (now?: Date, language?: string) => {
     }
   }
   return {
-    $or: [{ endsAt: { $gte: new Date() } }, { endsAt: null }, { endsAt: { $exists: false } }],
+    $or: [
+      { endsAt: { $gte: new Date() } },
+      { endsAt: null },
+      { endsAt: { $exists: false } },
+    ],
   }
 }
 
@@ -66,13 +75,15 @@ export type FlashNewsType = {
   endsAt?: Date
   objectType?: string
   objectId?: string
-  content: Object
+  content: string | { content: object; html: string; text: string }
   onlyDisplayOn?: string[]
   getContent: (language: string) => string | object
   availableLanguages: () => string[]
 }
 
-export const FlashNewsCollection = new Mongo.Collection<FlashNewsType>('freedombase:flashnews')
+export const FlashNewsCollection = new Mongo.Collection<FlashNewsType>(
+  'freedombase:flashnews',
+)
 
 export const FlashNewsSchema = new SimpleSchema({
   content: {
@@ -158,7 +169,11 @@ export class FlashNewsModel extends BaseModel {
    */
   getContent(language: string) {
     // If content in current language is not set in onlyDisplayOn then return null
-    if (this.onlyDisplayOn?.length > 0 && !this.onlyDisplayOn.includes(language)) return null
+    if (
+      this.onlyDisplayOn?.length > 0 &&
+      !this.onlyDisplayOn.includes(language)
+    )
+      return null
     // If it is set that
     const availableLanguages = this.availableLanguages()
     if (!availableLanguages.includes(language)) {
@@ -193,7 +208,7 @@ export const afterFlashNewsDelete = new Hook()
 Meteor.methods({
   /**
    * Create a new flash news
-   * @param content {Object} An object with the different locales should have format like this: { en: 'First news', cs: 'První novinka' } or instead of strings can include object with your default structure for the given language.
+   * @param _content {Object} An object with the different locales should have format like this: { en: 'First news', cs: 'První novinka' } or instead of strings can include object with your default structure for the given language.
    * @param defaultLanguage {String} Default language of the news. This language will be used when the requested language is not available.
    * @param startsAt {Date} The starting date when the news should be displayed, by default it is the creation date.
    * @param endsAt {Date} Add a date when the news should stop being displayed, undefined by default.
@@ -202,15 +217,15 @@ Meteor.methods({
    * @param onlyDisplayOn {String[]} Only display content to languages specified in this array. If the language does not match any in this array it will not show the news.
    */
   'freedombase:flashnews-create': async function (
-    content,
-    defaultLanguage,
+    _content: string | { content: object; html: string; text: string },
+    defaultLanguage: string,
     startsAt = new Date(),
     endsAt = undefined,
     objectType = APP_NEWS,
     objectId = undefined,
-    onlyDisplayOn,
+    onlyDisplayOn = undefined,
   ) {
-    check(content, Object)
+    check(_content, Match.OneOfType(String, Object))
     check(defaultLanguage, String)
     check(startsAt, Date)
     check(endsAt, Match.Maybe(Date))
@@ -219,9 +234,11 @@ Meteor.methods({
     check(onlyDisplayOn, Match.Maybe([String]))
     const userId = this.userId
 
-    if (!userId) throw new Meteor.Error(403, 'User is required to create a flash news!')
+    if (!userId)
+      throw new Meteor.Error(403, 'User is required to create a flash news!')
 
     let stop = false
+    let content = _content
     beforeFlashNewsInsert.forEachAsync((hook) => {
       const result = hook(
         userId,
@@ -279,7 +296,8 @@ Meteor.methods({
   'freedombase:flashnews-delete': async function (newsId: string) {
     check(newsId, String)
     const userId = this.userId
-    if (!userId) throw new Meteor.Error(403, 'User is required to delete a flash news!')
+    if (!userId)
+      throw new Meteor.Error(403, 'User is required to delete a flash news!')
 
     const news = await FlashNewsCollection.findOneAsync(
       { _id: newsId },

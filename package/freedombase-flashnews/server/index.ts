@@ -1,14 +1,14 @@
+import { Match, check } from 'meteor/check'
 import { Meteor } from 'meteor/meteor'
-import { check, Match } from 'meteor/check'
 import {
+  APP_NEWS,
+  FlashNewsCollection,
+  FlashNewsSchema,
   afterFlashNewsDelete,
   afterFlashNewsInsert,
-  APP_NEWS,
   beforeFlashNewsDelete,
   beforeFlashNewsInsert,
   currentFlashNewsSelector,
-  FlashNewsCollection,
-  FlashNewsSchema,
   setSanitizationFunction,
 } from '../common'
 
@@ -59,7 +59,13 @@ Meteor.publish(
  */
 Meteor.publish(
   'freedombase:flashnews-getFor',
-  function (objectType: String, objectId: String, limit = 5, language = 'en', clientTime?: Date) {
+  function (
+    objectType: string,
+    objectId: string,
+    limit = 5,
+    language = 'en',
+    clientTime?: Date,
+  ) {
     this.unblock()
     check(objectType, String)
     check(objectId, Match.Maybe(String))

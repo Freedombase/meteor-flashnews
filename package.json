@@ -1,6 +1,6 @@
 {
   "name": "meteor-freedombase-flashnews",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Template Meteor package for FOSS",
   "main": "package/freedombase-flashnews/package.js",
@@ -15,7 +15,9 @@
   "readme": "README.md",
   "scripts": {
     "test": "npm run lint && meteor test-packages ",
-    "lint": "./node_modules/.bin/standard --fix",
+    "lint": "./node_modules/.bin/biome check --reporter=summary",
+    "lint-fix": "./node_modules/.bin/biome format --write --reporter=summary",
+    "lint-ci": "./node_modules/.bin/biome ci --reporter=github",
     "publish": "meteor npm i && npm prune --production && cd ./package/freedombase-flashnews/ && meteor publish && cd ../../ && meteor npm i",
     "all-contributors": "./node_modules/.bin/all-contributors",
     "all-contributors-generate": "./node_modules/.bin/all-contributors generate"
@@ -23,9 +25,7 @@
   "author": "Jan Dvorak",
   "license": "MIT",
   "standard": {
-    "env": [
-      "mocha"
-    ],
+    "env": ["mocha"],
     "parser": "babel-eslint"
   },
   "funding": {
@@ -38,9 +38,9 @@
     }
   },
   "dependencies": {
-    "all-contributors-cli": "6.26.1",
-    "babel-eslint": "10.0.3",
-    "husky": "8.0.3",
-    "standard": "17.1.0"
+    "all-contributors-cli": "6.26.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3"
   }
 }
