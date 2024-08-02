@@ -9,6 +9,8 @@ import { Meteor } from 'meteor/meteor'
 
 let userId: string
 
+// TODO migrate to async
+
 if (Meteor.isTest) {
   Meteor.methods({
     loginUser: function () {
