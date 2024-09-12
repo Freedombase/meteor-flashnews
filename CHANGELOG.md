@@ -10,7 +10,13 @@
 
 ### Deprecated
 
-## v1.0.0 - 2024-XX-XX
+## v1.0.1 - 2024-09-12
+
+### Fixes
+
+* Fix wrong check in `freedombase:flashnews-create` method
+
+## v1.0.0 - 2024-08-02
 
 ### Breaking changes
 

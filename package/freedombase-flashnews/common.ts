@@ -225,7 +225,7 @@ Meteor.methods({
     objectId = undefined,
     onlyDisplayOn = undefined,
   ) {
-    check(_content, Match.OneOfType(String, Object))
+    check(_content, Match.OneOf(String, Object))
     check(defaultLanguage, String)
     check(startsAt, Date)
     check(endsAt, Match.Maybe(Date))
